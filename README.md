@@ -1,2 +1,2 @@
-# CrowdFix
-Crowd fix is a short name we have given to our community problem reporting software. it aims to help resident of certain locality to report the problems they are facing in their daily life.
+This Software Requirements Specification (SRS) document describes the functional and non-functional requirements for CrowdFix, a community problem reporting web/mobile application. It serves as the authoritative reference for the development team, project stakeholders, and quality assurance personnel throughout the software development lifecycle.
+This document is intended for use by all four team members who must individually upload it before the project deadline and commit it to the project's GitHub repository.
