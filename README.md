@@ -88,10 +88,10 @@ Client (Web & Mobile) → API Server → Database
 
 ## 👥 Team Members
 
-* Member 1
-* Member 2
-* Member 3
-* Member 4
+* BASNET ANJALI
+* BHOTE UMANG
+* BK DOL BAHADUR
+* SAPKOTA PRATIK
 
 ---
 
