@@ -1,100 +1,57 @@
-# 🏙️ Community Problem Reporting System
+# CrowdFix Nepal 🇳🇵
 
-## 📌 Overview
+> Community Problem Reporting Platform — citizens report local civic issues (potholes, broken streetlights, garbage, water leaks), reports are geotagged and routed to the relevant municipality (KMC, LSMC, Bhaktapur) for resolution.
 
-The **Community Problem Reporting System** is a full-stack application that allows citizens to report local issues such as potholes, broken streetlights, garbage problems, and public safety concerns.
+## 👥 Team
 
-The platform consists of:
+| Name | Role |
+|---|---|
+| Sapkota Pratik | Project Lead / Backend Developer |
+| Bhote Umang | Frontend Developer |
+| BK Dol Bahadur | UI/UX Designer |
+| Basnet Anjali | QA / Database Engineer |
 
-* 🌐 A web application for administrators and citizens
-* 📱 A mobile application for easy on-the-go reporting
-
-This system aims to improve communication between communities and local authorities by providing a simple, transparent, and trackable reporting process.
-
----
-
-## 🎯 Objectives
-
-* Enable users to report issues with location and images
-* Allow authorities to track, manage, and resolve problems
-* Provide real-time status updates (Pending, In Progress, Resolved)
-* Improve community engagement and civic responsibility
-
----
+Department of Information Security
 
 ## 🛠️ Tech Stack
 
-### Frontend (Web)
+| Layer | Tech |
+|---|---|
+| Frontend | React 18 + Vite + Tailwind CSS |
+| Backend | Node.js + Express + Prisma ORM |
+| Database | PostgreSQL 17 |
+| Auth | JWT (1h expiry) + bcrypt |
+| File Storage | Cloudinary |
+| Maps | Leaflet + OpenStreetMap |
+| Email | Nodemailer + Gmail SMTP |
+| Hosting | Vercel (frontend) + Render (backend + DB) |
+| CI/CD | GitHub Actions |
 
-* React.js
-* Tailwind CSS
+## 📂 Structure
 
-### Mobile App
+```
+crowdfix/
+├── frontend/      # React app (Vite)
+├── backend/       # Express REST API
+├── database/      # Schema, seeds, migrations
+├── docs/          # SRS, mockup, RTM, diagrams
+└── README.md
+```
 
-* React Native (Expo)
+## 🌿 Branching
 
-### Backend
+- `main` — protected, release-ready
+- `dev` — integration branch
+- `feat/<name>` — feature branches
 
-* Node.js
-* Express.js
+All PRs target `dev`. `dev → main` only at release tags.
 
-### Database
+## 📝 Commit Convention
 
-* MongoDB
+`<type>(<scope>): <short description>` — types: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`, `ci`.
 
-### Other Tools
-
-* Firebase (for notifications)
-* Cloudinary (for image uploads)
-
----
-
-## ✨ Features
-
-### 👤 User Features
-
-* Register & Login
-* Report issues with:
-
-  * Description
-  * Image upload
-  * Location (GPS)
-* View reported issues
-* Track status updates
-
-### 🛠️ Admin Features
-
-* Dashboard overview
-* Manage reports
-* Update report status
-* Assign tasks
-
----
-
-## 🧩 System Architecture
-
-Client (Web & Mobile) → API Server → Database
-
----
-
-## 🚀 Future Enhancements
-
-* AI-based issue categorization
-* Map-based visualization
-* Push notifications
-* Multi-language support
-
----
-
-## 👥 Team Members
-
-* BASNET ANJALI
-* BHOTE UMANG
-* BK DOL BAHADUR
-* SAPKOTA PRATIK
-
----
+Example: `feat(auth): add JWT login endpoint`
 
 ## 📄 License
 
-This project is developed for educational purposes.
+MIT
