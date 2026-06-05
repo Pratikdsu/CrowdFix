@@ -50,3 +50,6 @@ npx prisma migrate dev         # after editing schema.prisma
 npx prisma migrate reset       # wipe and re-seed (dev only!)
 npx prisma generate            # regenerate client after schema changes
 ```
+
+## Owner
+Basnet Anjali (DB) + Sapkota Pratik (backend integration)
