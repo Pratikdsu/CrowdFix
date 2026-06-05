@@ -1,0 +1,178 @@
+// CrowdFix Nepal — Prisma Schema
+// Source: SRS §8 Data Requirements
+// Owner: Basnet Anjali (DB) + Sapkota Pratik (backend)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================
+// ENUMS
+// ============================================================
+
+enum UserRole {
+  CITIZEN
+  AUTHORITY
+  ADMIN
+}
+
+enum ReportCategory {
+  INFRASTRUCTURE
+  SANITATION
+  PUBLIC_SAFETY
+  UTILITIES
+  ENVIRONMENT
+  OTHER
+}
+
+enum ReportStatus {
+  OPEN
+  ASSIGNED
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+enum MediaType {
+  REPORT_PHOTO
+  RESOLUTION_PHOTO
+}
+
+enum NotificationType {
+  STATUS_CHANGE
+  COMMENT_ADDED
+  UPVOTE_MILESTONE
+  ASSIGNMENT
+}
+
+// ============================================================
+// MODELS
+// ============================================================
+
+model User {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  passwordHash  String   @map("password_hash")
+  name          String
+  phone         String?
+  avatarUrl     String?  @map("avatar_url")
+  role          UserRole @default(CITIZEN)
+  emailVerified Boolean  @default(false) @map("email_verified")
+  isActive      Boolean  @default(true)  @map("is_active")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt      @map("updated_at")
+
+  authority     Authority?
+  reports       Report[]
+  comments      Comment[]
+  upvotes       Upvote[]
+  notifications Notification[]
+
+  @@map("users")
+}
+
+model Authority {
+  id           String   @id @default(cuid())
+  userId       String   @unique @map("user_id")
+  jurisdiction String
+  department   String?
+  officerTitle String?  @map("officer_title")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  assignedReports Report[] @relation("AuthorityReports")
+
+  @@map("authorities")
+}
+
+model Report {
+  id             String         @id @default(cuid())
+  reporterId     String         @map("reporter_id")
+  authorityId    String?        @map("authority_id")
+  title          String
+  description    String         @db.Text
+  category       ReportCategory
+  status         ReportStatus   @default(OPEN)
+  latitude       Decimal        @db.Decimal(9, 6)
+  longitude      Decimal        @db.Decimal(9, 6)
+  address        String?
+  resolutionNote String?        @map("resolution_note") @db.Text
+  upvoteCount    Int            @default(0) @map("upvote_count")
+  createdAt      DateTime       @default(now()) @map("created_at")
+  updatedAt      DateTime       @updatedAt      @map("updated_at")
+  resolvedAt     DateTime?      @map("resolved_at")
+
+  reporter      User           @relation(fields: [reporterId], references: [id])
+  authority     Authority?     @relation("AuthorityReports", fields: [authorityId], references: [id])
+  media         Media[]
+  comments      Comment[]
+  upvotes       Upvote[]
+  notifications Notification[]
+
+  @@index([status])
+  @@index([category])
+  @@index([createdAt])
+  @@map("reports")
+}
+
+model Media {
+  id         String    @id @default(cuid())
+  reportId   String    @map("report_id")
+  url        String
+  type       MediaType @default(REPORT_PHOTO)
+  uploadedAt DateTime  @default(now()) @map("uploaded_at")
+
+  report Report @relation(fields: [reportId], references: [id], onDelete: Cascade)
+
+  @@index([reportId])
+  @@map("media")
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  reportId  String   @map("report_id")
+  userId    String   @map("user_id")
+  body      String   @db.Text
+  isDeleted Boolean  @default(false) @map("is_deleted")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  report Report @relation(fields: [reportId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id])
+
+  @@index([reportId])
+  @@map("comments")
+}
+
+model Upvote {
+  id        String   @id @default(cuid())
+  reportId  String   @map("report_id")
+  userId    String   @map("user_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  report Report @relation(fields: [reportId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id])
+
+  @@unique([reportId, userId])
+  @@map("upvotes")
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String           @map("user_id")
+  reportId  String?          @map("report_id")
+  type      NotificationType
+  message   String
+  isRead    Boolean          @default(false) @map("is_read")
+  createdAt DateTime         @default(now()) @map("created_at")
+
+  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  report Report? @relation(fields: [reportId], references: [id])
+
+  @@index([userId, isRead])
+  @@map("notifications")
+}
