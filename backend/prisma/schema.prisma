@@ -1,13 +1,14 @@
 // CrowdFix Nepal — Prisma Schema
 // Source: SRS §8 Data Requirements
+// Owner: Basnet Anjali (DB) + Sapkota Pratik (backend)
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 // ============================================================
@@ -83,7 +84,7 @@ model Authority {
   officerTitle String?  @map("officer_title")
   createdAt    DateTime @default(now()) @map("created_at")
 
-  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   assignedReports Report[] @relation("AuthorityReports")
 
   @@map("authorities")
@@ -156,7 +157,7 @@ model Upvote {
   report Report @relation(fields: [reportId], references: [id], onDelete: Cascade)
   user   User   @relation(fields: [userId], references: [id])
 
-  @@unique([reportId, userId])   // FR-14: one upvote per user per report
+  @@unique([reportId, userId])
   @@map("upvotes")
 }
 
