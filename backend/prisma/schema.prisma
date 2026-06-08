@@ -67,6 +67,10 @@ model User {
   createdAt     DateTime @default(now()) @map("created_at")
   updatedAt     DateTime @updatedAt      @map("updated_at")
 
+  verificationToken String?   @map("verification_token")
+  resetOtp          String?   @map("reset_otp")
+  resetOtpExpiry    DateTime? @map("reset_otp_expiry")
+  
   authority     Authority?
   reports       Report[]
   comments      Comment[]
