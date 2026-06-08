@@ -26,6 +26,9 @@ CREATE TABLE "users" (
     "is_active" BOOLEAN NOT NULL DEFAULT true,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
+    "verification_token" TEXT,
+    "reset_otp" TEXT,
+    "reset_otp_expiry" TIMESTAMP(3),
 
     CONSTRAINT "users_pkey" PRIMARY KEY ("id")
 );

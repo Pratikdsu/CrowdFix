@@ -3,6 +3,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
+const authRoutes = require('./routes/auth.routes');
 
 const config = require('./config/env');
 const healthRoutes = require('./routes/health.routes');
@@ -38,6 +39,7 @@ app.use(limiter);
 
 // 6. Routes
 app.use("/api/health", healthRoutes);
+app.use("/api/auth", authRoutes);
 
 // 7. 404 handler (after all routes)
 app.use(notFound);
