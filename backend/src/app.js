@@ -4,6 +4,7 @@ const helmet = require('helmet');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
 const authRoutes = require('./routes/auth.routes');
+const reportsRoutes = require('./routes/reports.routes');
 
 const config = require('./config/env');
 const healthRoutes = require('./routes/health.routes');
@@ -38,8 +39,9 @@ const limiter = rateLimit({
 app.use(limiter);
 
 // 6. Routes
-app.use("/api/health", healthRoutes);
-app.use("/api/auth", authRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/reports', reportsRoutes);   
+app.use('/api/health', healthRoutes);
 
 // 7. 404 handler (after all routes)
 app.use(notFound);
