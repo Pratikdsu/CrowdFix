@@ -1,0 +1,47 @@
+@import "tailwindcss";
+
+@theme {
+  /* ── Brand (Nepal flag palette) ── */
+  --color-crimson: #DC143C;
+  --color-crimson-dark: #A30D2C;
+  --color-crimson-soft: #FDECEF;
+  --color-crimson-tint: #FFF5F7;
+  --color-indigo: #003893;
+  --color-saffron: #E07B14;
+  --color-saffron-soft: #FEF3E2;
+  --color-gold: #C9A227;
+
+  /* ── Status colors ── */
+  --color-teal: #0F766E;
+  --color-teal-soft: #D1FAE5;
+  --color-closed: #78716C;
+  --color-closed-soft: #F5F5F4;
+
+  /* ── Neutrals (warm Lokta paper) ── */
+  --color-bg: #FBF8F3;
+  --color-bg-warm: #F5EFE4;
+  --color-surface: #FFFFFF;
+  --color-surface-elev: #FFFCF7;
+  --color-ink: #1C1917;
+  --color-ink-soft: #292524;
+  --color-muted: #78716C;
+  --color-subtle: #A8A29E;
+  --color-line: #EDE5D8;
+  --color-line-strong: #DDD1BD;
+
+  /* ── Fonts ── */
+  --font-display: "Fraunces", Georgia, serif;
+  --font-body: "Plus Jakarta Sans", system-ui, sans-serif;
+  --font-np: "Noto Sans Devanagari", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+
+  /* ── Radius ── */
+  --radius-card: 16px;
+  --radius-sheet: 22px;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--color-bg);
+  color: var(--color-ink);
+}

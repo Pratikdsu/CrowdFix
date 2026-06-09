@@ -1,0 +1,8 @@
+export default function NotificationsPage() {
+  return (
+    <div>
+      <h1 className="font-display text-2xl font-bold text-ink mb-1">Notifications</h1>
+      <p className="text-muted">Your notifications. (Built in Phase 12)</p>
+    </div>
+  );
+}
