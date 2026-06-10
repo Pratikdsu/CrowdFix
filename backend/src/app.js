@@ -20,7 +20,20 @@ const app = express();
 app.use(helmet());
 
 // 2. CORS
-app.use(cors({ origin: config.frontendUrl, credentials: true }));
+app.use(cors({
+  origin: function(origin, callback) {
+    const allowed = [
+      'https://crowdfix-frontend.vercel.app',
+      /\.vercel\.app$/
+    ];
+    if (!origin || allowed.some(o => typeof o === 'string' ? o === origin : o.test(origin))) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true
+}));
 
 // 3. Body parsers
 app.use(express.json());
