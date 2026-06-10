@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { MapPin, ArrowLeft } from 'lucide-react';
+import { MapPin, ArrowLeft, ThumbsUp, Trash2 } from 'lucide-react';
 import api from '../lib/api';
+import useAuthStore from '../lib/authStore';
 
 const STATUS_STYLES = {
   OPEN: 'bg-crimson-soft text-crimson',
@@ -22,9 +23,14 @@ const CATEGORY_LABELS = {
 
 export default function ReportDetailPage() {
   const { id } = useParams();
+  const token = useAuthStore((s) => s.token);
   const [report, setReport] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [upvoting, setUpvoting] = useState(false);
+  const [commentBody, setCommentBody] = useState('');
+  const [commenting, setCommenting] = useState(false);
+  const [commentError, setCommentError] = useState('');
 
   useEffect(() => {
     fetchReport();
@@ -40,6 +46,49 @@ export default function ReportDetailPage() {
       setError('Report not found or failed to load.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleUpvote = async () => {
+    if (!token) return;
+    setUpvoting(true);
+    try {
+      await api.post(`/reports/${id}/upvote`);
+      setReport((r) => ({ ...r, upvoteCount: (r.upvoteCount || 0) + 1 }));
+    } catch (err) {
+      // Already upvoted or error — ignore
+    } finally {
+      setUpvoting(false);
+    }
+  };
+
+  const handleComment = async () => {
+    if (!commentBody.trim()) return;
+    setCommenting(true);
+    setCommentError('');
+    try {
+      const res = await api.post(`/reports/${id}/comments`, { body: commentBody });
+      setReport((r) => ({
+        ...r,
+        comments: [...(r.comments || []), res.data],
+      }));
+      setCommentBody('');
+    } catch (err) {
+      setCommentError('Failed to post comment. Please try again.');
+    } finally {
+      setCommenting(false);
+    }
+  };
+
+  const handleDeleteComment = async (commentId) => {
+    try {
+      await api.delete(`/comments/${commentId}`);
+      setReport((r) => ({
+        ...r,
+        comments: r.comments.filter((c) => c.id !== commentId),
+      }));
+    } catch (err) {
+      // ignore
     }
   };
 
@@ -68,7 +117,6 @@ export default function ReportDetailPage() {
 
   return (
     <div className="max-w-2xl">
-      {/* Back button */}
       <Link
         to="/home"
         className="flex items-center gap-2 text-muted text-sm mb-6 hover:text-ink transition-colors"
@@ -101,10 +149,18 @@ export default function ReportDetailPage() {
           <span>{report.address || `${report.latitude}, ${report.longitude}`}</span>
         </div>
 
-        <div className="flex items-center gap-4 text-xs text-muted pt-4 border-t border-line">
-          <span>👍 {report.upvoteCount || 0} upvotes</span>
-          <span>•</span>
-          <span>Reported on {new Date(report.createdAt).toLocaleDateString()}</span>
+        <div className="flex items-center gap-4 pt-4 border-t border-line">
+          <button
+            onClick={handleUpvote}
+            disabled={upvoting || !token}
+            className="flex items-center gap-2 px-4 py-2 rounded-[10px] border border-line text-sm font-medium text-ink hover:bg-crimson-soft hover:text-crimson hover:border-crimson transition-colors disabled:opacity-50"
+          >
+            <ThumbsUp size={16} />
+            {report.upvoteCount || 0} Upvotes
+          </button>
+          <span className="text-xs text-muted">
+            Reported on {new Date(report.createdAt).toLocaleDateString()}
+          </span>
         </div>
       </div>
 
@@ -117,27 +173,64 @@ export default function ReportDetailPage() {
       )}
 
       {/* Comments */}
-      {report.comments && report.comments.length > 0 && (
-        <div className="bg-surface border border-line rounded-[16px] p-5">
-          <h3 className="font-semibold text-ink text-sm mb-4">
-            Comments ({report.comments.length})
-          </h3>
+      <div className="bg-surface border border-line rounded-[16px] p-5">
+        <h3 className="font-semibold text-ink text-sm mb-4">
+          Comments ({report.comments?.length || 0})
+        </h3>
+
+        {/* Comment form */}
+        {token && (
+          <div className="mb-4">
+            <textarea
+              value={commentBody}
+              onChange={(e) => setCommentBody(e.target.value)}
+              placeholder="Write a comment..."
+              rows={3}
+              className="w-full px-3 py-2.5 rounded-[10px] border border-line bg-bg text-ink text-sm outline-none focus:border-crimson transition-colors resize-none mb-2"
+            />
+            {commentError && (
+              <p className="text-crimson text-xs mb-2">{commentError}</p>
+            )}
+            <button
+              onClick={handleComment}
+              disabled={commenting || !commentBody.trim()}
+              className="px-4 py-2 bg-crimson text-white rounded-[10px] text-sm font-semibold hover:bg-crimson-dark transition-colors disabled:opacity-50"
+            >
+              {commenting ? 'Posting...' : 'Post Comment'}
+            </button>
+          </div>
+        )}
+
+        {/* Comment list */}
+        {!report.comments || report.comments.length === 0 ? (
+          <p className="text-muted text-sm">No comments yet. Be the first!</p>
+        ) : (
           <div className="space-y-4">
             {report.comments.map((comment) => (
               <div key={comment.id} className="border-b border-line pb-4 last:border-0 last:pb-0">
-                <div className="flex items-center gap-2 mb-1">
-                  <div className="w-7 h-7 rounded-full bg-indigo text-white flex items-center justify-center text-xs font-semibold">
-                    {comment.user?.name?.charAt(0) || '?'}
+                <div className="flex items-center justify-between mb-1">
+                  <div className="flex items-center gap-2">
+                    <div className="w-7 h-7 rounded-full bg-indigo text-white flex items-center justify-center text-xs font-semibold">
+                      {comment.user?.name?.charAt(0) || '?'}
+                    </div>
+                    <span className="text-sm font-medium text-ink">{comment.user?.name || 'Unknown'}</span>
+                    <span className="text-xs text-muted">{new Date(comment.createdAt).toLocaleDateString()}</span>
                   </div>
-                  <span className="text-sm font-medium text-ink">{comment.user?.name || 'Unknown'}</span>
-                  <span className="text-xs text-muted">{new Date(comment.createdAt).toLocaleDateString()}</span>
+                  {token && (
+                    <button
+                      onClick={() => handleDeleteComment(comment.id)}
+                      className="text-subtle hover:text-crimson transition-colors"
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  )}
                 </div>
                 <p className="text-sm text-ink-soft ml-9">{comment.body}</p>
               </div>
             ))}
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }
