@@ -1,3 +1,4 @@
+// if (!user.emailVerified) throw httpError('Please verify your email before logging in', 403);
 // backend/src/services/auth.service.js
 const bcrypt = require('bcrypt'); // change to 'bcryptjs' if that's what you installed
 const prisma = require('../lib/prisma');
@@ -23,7 +24,7 @@ async function register({ name, email, password }) {
     data: { name, email, passwordHash, verificationToken },
   });
 
-  const verifyUrl = `http://localhost:${config.port}/api/auth/verify?token=${verificationToken}`;
+  const verifyUrl = `${config.frontendUrl}/api/auth/verify?token=${verificationToken}`;
   await sendEmail({
     to: email,
     subject: 'Verify your CrowdFix account',
