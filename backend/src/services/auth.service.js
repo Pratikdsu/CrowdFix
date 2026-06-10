@@ -1,5 +1,4 @@
-// if (!user.emailVerified) throw httpError('Please verify your email before logging in', 403);
-// backend/src/services/auth.service.js
+// if (!user.emailVerified) throw httpError('Please verify your email before logging in', 403);// backend/src/services/auth.service.js
 const bcrypt = require('bcrypt'); // change to 'bcryptjs' if that's what you installed
 const prisma = require('../lib/prisma');
 const config = require('../config/env');
