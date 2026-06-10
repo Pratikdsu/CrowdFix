@@ -6,6 +6,7 @@ const rateLimit = require('express-rate-limit');
 const authRoutes = require('./routes/auth.routes');
 const reportsRoutes = require('./routes/reports.routes');
 
+const { reportRouter, commentsRouter } = require('./routes/upvotesComments.routes');
 const config = require('./config/env');
 const healthRoutes = require('./routes/health.routes');
 const notFound = require('./middleware/notFound.middleware');
@@ -42,7 +43,8 @@ app.use(limiter);
 app.use('/api/auth', authRoutes);
 app.use('/api/reports', reportsRoutes);   
 app.use('/api/health', healthRoutes);
-
+app.use('/api/reports/:id', reportRouter);
+app.use('/api/comments', commentsRouter);
 // 7. 404 handler (after all routes)
 app.use(notFound);
 
